@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Hiragana Practice</title>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Hiragana Practice</h1>
+        <div id="hiragana-grid"></div>
+        <div id="input-container">
+            <input type="text" id="romanji-input" placeholder="Enter Romaji">
+            <button onclick="checkAnswer()">Check</button>
+            <button onclick="shuffleCharacters()">Shuffle</button>
+        </div>
+        <div id="result-container"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+#game-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+#hiragana-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 50px);
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.hiragana-cell {
+    font-size: 24px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.hiragana-cell.correct {
+    background-color: #c8e6c9;
+}
+
+.hiragana-cell.wrong {
+    background-color: #ffcdd2;
+}
+
+#input-container {
+    margin-bottom: 20px;
+}
+
+#romanji-input {
+    padding: 5px;
+    font-size: 16px;
+}
+
+#result-container {
+    margin-top: 10px;
+    font-weight: bold;
+}
+.hiragana-cell.selected {
+    background-color: #ffeb3b; /* Yellow color */
+}
+
+
+</style>
+<script>
+    const hiraganaList = [
+    { char: "あ", romaji: "a" },   { char: "い", romaji: "i" },   { char: "う", romaji: "u" },   { char: "え", romaji: "e" },   { char: "お", romaji: "o" },
+    { char: "か", romaji: "ka" },  { char: "き", romaji: "ki" },  { char: "く", romaji: "ku" },  { char: "け", romaji: "ke" },  { char: "こ", romaji: "ko" },
+    { char: "さ", romaji: "sa" },  { char: "し", romaji: "shi" }, { char: "す", romaji: "su" },  { char: "せ", romaji: "se" },  { char: "そ", romaji: "so" },
+    { char: "た", romaji: "ta" },  { char: "ち", romaji: "chi" }, { char: "つ", romaji: "tsu" }, { char: "て", romaji: "te" },  { char: "と", romaji: "to" },
+    { char: "な", romaji: "na" },  { char: "に", romaji: "ni" },  { char: "ぬ", romaji: "nu" },  { char: "ね", romaji: "ne" },  { char: "の", romaji: "no" },
+    { char: "は", romaji: "ha" },  { char: "ひ", romaji: "hi" },  { char: "ふ", romaji: "fu" },  { char: "へ", romaji: "he" },  { char: "ほ", romaji: "ho" },
+    { char: "ま", romaji: "ma" },  { char: "み", romaji: "mi" },  { char: "む", romaji: "mu" },  { char: "め", romaji: "me" },  { char: "も", romaji: "mo" },
+    { char: "や", romaji: "ya" },  { char: "ゆ", romaji: "yu" },  { char: "よ", romaji: "yo" },
+    { char: "ら", romaji: "ra" },  { char: "り", romaji: "ri" },  { char: "る", romaji: "ru" },  { char: "れ", romaji: "re" },  { char: "ろ", romaji: "ro" },
+    { char: "わ", romaji: "wa" },  { char: "を", romaji: "wo" },  { char: "ん", romaji: "n" }
+];
+
+let currentCharacter = null;
+
+function shuffleCharacters() {
+    const shuffledList = [...hiraganaList].sort(() => Math.random() - 0.5);
+    const grid = document.getElementById('hiragana-grid');
+    grid.innerHTML = '';
+
+    shuffledList.forEach(item => {
+        const cell = document.createElement('div');
+        cell.classList.add('hiragana-cell');
+        cell.textContent = item.char;
+        cell.onclick = () => selectCharacter(cell, item);
+        grid.appendChild(cell);
+    });
+}
+function selectCharacter(cell, item) {
+    // Remove the 'selected' class from any previously selected character
+    document.querySelectorAll('.hiragana-cell').forEach(c => c.classList.remove('selected'));
+
+    // Add the 'selected' class to the currently clicked cell
+    cell.classList.add('selected');
+
+    // Set the current character
+    currentCharacter = item;
+    
+    // Focus on the input field
+    document.getElementById('romanji-input').focus();
+}
+
+function checkAnswer() {
+    const input = document.getElementById('romanji-input').value.trim().toLowerCase();
+    const resultContainer = document.getElementById('result-container');
+
+    if (currentCharacter) {
+        if (input === currentCharacter.romaji) {
+            resultContainer.textContent = "Correct!";
+            document.querySelectorAll('.hiragana-cell').forEach(cell => {
+                if (cell.textContent === currentCharacter.char) {
+                    cell.classList.add('correct');
+                    cell.classList.remove('wrong', 'selected');
+                }
+            });
+        } else {
+            resultContainer.textContent = `Wrong! The correct answer is ${currentCharacter.romaji}`;
+            document.querySelectorAll('.hiragana-cell').forEach(cell => {
+                if (cell.textContent === currentCharacter.char) {
+                    cell.classList.add('wrong');
+                    cell.classList.remove('correct', 'selected');
+                }
+            });
+        }
+        // Clear the input and reset the current character
+        document.getElementById('romanji-input').value = '';
+        currentCharacter = null;
+    } else {
+        resultContainer.textContent = "Please select a character first.";
+    }
+}
+// Initialize the grid with shuffled characters on page load
+window.onload = shuffleCharacters;
+
+</script>
+</html>
