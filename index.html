@@ -9,6 +9,16 @@
 <body>
     <div id="game-container">
         <h1>Hiragana Practice</h1>
+
+         <!-- Scorecard Section -->
+         <div id="scorecard">
+            <p>Total Characters: <span id="total-characters">0</span></p>
+            <p>Passed Attempts: <span id="passed-attempts">0</span></p>
+            <p>Failed Attempts: <span id="failed-attempts">0</span></p>
+        </div>
+
+    
+
         <div id="hiragana-grid"></div>
         <div id="input-container">
             <input type="text" id="romanji-input" placeholder="Enter Romaji">
@@ -16,7 +26,13 @@
             <button onclick="shuffleCharacters()">Shuffle</button>
         </div>
         <div id="result-container"></div>
+
+        <!-- Learn Hiragana Link opening in new tab with link and target -->
+     <a href="https://nihongoflashcards.com/wp-content/uploads/chart-hiragana-600x855.png" target="_blank">Click to Learn Hiragana</a>
+     <br> 
     </div>
+
+     
     <script src="script.js"></script>
 </body>
 <style>
@@ -78,10 +94,31 @@
     background-color: #ffeb3b; /* Yellow color */
 }
 
+#scorecard {
+    display: flex;
+    flex-direction: column; /* Change to column layout to ensure each item is on a new line */
+    align-items: flex-start; /* Align items to the left */
+    margin-bottom: 20px;
+    background-color: #e3f2fd;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#scorecard p {
+    margin: 0;
+    font-weight: bold;
+}
+
 
 </style>
 <script>
-    const hiraganaList = [
+
+    // Scorecard variables
+let totalCharacters = 0;
+let passedAttempts = 0;
+let failedAttempts = 0;
+
+const hiraganaList = [
     { char: "あ", romaji: "a" },   { char: "い", romaji: "i" },   { char: "う", romaji: "u" },   { char: "え", romaji: "e" },   { char: "お", romaji: "o" },
     { char: "か", romaji: "ka" },  { char: "き", romaji: "ki" },  { char: "く", romaji: "ku" },  { char: "け", romaji: "ke" },  { char: "こ", romaji: "ko" },
     { char: "さ", romaji: "sa" },  { char: "し", romaji: "shi" }, { char: "す", romaji: "su" },  { char: "せ", romaji: "se" },  { char: "そ", romaji: "so" },
@@ -108,7 +145,12 @@ function shuffleCharacters() {
         cell.onclick = () => selectCharacter(cell, item);
         grid.appendChild(cell);
     });
+
+    // Update total characters when shuffled
+    totalCharacters = shuffledList.length;
+    updateScorecard();
 }
+
 function selectCharacter(cell, item) {
     // Remove the 'selected' class from any previously selected character
     document.querySelectorAll('.hiragana-cell').forEach(c => c.classList.remove('selected'));
@@ -136,6 +178,7 @@ function checkAnswer() {
                     cell.classList.remove('wrong', 'selected');
                 }
             });
+            passedAttempts++;
         } else {
             resultContainer.textContent = `Wrong! The correct answer is ${currentCharacter.romaji}`;
             document.querySelectorAll('.hiragana-cell').forEach(cell => {
@@ -144,16 +187,33 @@ function checkAnswer() {
                     cell.classList.remove('correct', 'selected');
                 }
             });
+            failedAttempts++;
         }
         // Clear the input and reset the current character
         document.getElementById('romanji-input').value = '';
         currentCharacter = null;
+        
+        // Update the scorecard
+        updateScorecard();
     } else {
         resultContainer.textContent = "Please select a character first.";
     }
 }
+
+function updateScorecard() {
+    document.getElementById('total-characters').textContent = totalCharacters;
+    document.getElementById('passed-attempts').textContent = passedAttempts;
+    document.getElementById('failed-attempts').textContent = failedAttempts;
+}
+
+// Learn button functionality
+function learnHiragana() {
+    window.open("https://www.tofugu.com/japanese/learn-hiragana/", "_blank");
+}
+
 // Initialize the grid with shuffled characters on page load
 window.onload = shuffleCharacters;
+
 
 </script>
 </html>
