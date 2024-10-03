@@ -134,6 +134,14 @@ const hiraganaList = [
 let currentCharacter = null;
 
 function shuffleCharacters() {
+    // Clear the results and text container
+    // Scorecard variables
+    passedAttempts = 0;
+    failedAttempts = 0;
+    updateScorecard();
+
+   
+
     const shuffledList = [...hiraganaList].sort(() => Math.random() - 0.5);
     const grid = document.getElementById('hiragana-grid');
     grid.innerHTML = '';
